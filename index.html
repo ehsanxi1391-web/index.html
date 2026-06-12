@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CryptoDesk Pro — Professional Trader's Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0A0E17;
+    --surface:  #111827;
+    --card:     #141D2B;
+    --card2:    #1A2535;
+    --border:   #1E2E42;
+    --blue:     #00D4FF;
+    --green:    #00FF88;
+    --red:      #FF3B5C;
+    --gold:     #FFB800;
+    --purple:   #A855F7;
+    --text:     #E2E8F0;
+    --muted:    #64748B;
+    --dim:      #94A3B8;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ── TICKER TAPE ─────────────────────────────── */
+  .ticker-wrap {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    padding: 8px 0;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .ticker-track {
+    display: flex;
+    gap: 48px;
+    animation: tickerScroll 40s linear infinite;
+    white-space: nowrap;
+    width: max-content;
+  }
+  @keyframes tickerScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  .ticker-item {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ticker-item .sym  { color: var(--blue); font-weight:700; }
+  .ticker-item .prc  { color: var(--text); }
+  .ticker-item .chg.up  { color: var(--green); }
+  .ticker-item .chg.dn  { color: var(--red); }
+
+  /* ── NAV ─────────────────────────────────────── */
+  nav {
+    background: rgba(10,14,23,.96);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 37px; z-index: 99;
+    backdrop-filter: blur(12px);
+  }
+  .nav-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--blue);
+    letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--text); }
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--dim);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: .3px;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--blue); }
+  .nav-cta {
+    background: var(--blue);
+    color: var(--bg);
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: opacity .2s;
+  }
+  .nav-cta:hover { opacity: .85; }
+
+  /* ── HERO ─────────────────────────────────────── */
+  .hero {
+    padding: 80px 32px 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--blue);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    margin-bottom: 20px;
+  }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--blue), var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    color: var(--dim);
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 32px;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    margin-top: 8px;
+  }
+  .hero-stat .val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--blue);
+  }
+  .hero-stat .lbl {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* BTC Live Card */
+  .btc-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .btc-card::before {
+    content:'';
+    position:absolute;
+    top:-40px; right:-40px;
+    width:200px; height:200px;
+    background: radial-gradient(circle, rgba(0,212,255,.12) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .btc-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .btc-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+  }
+  .btc-symbol {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .live-dot {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--green);
+    font-family: 'Space Mono', monospace;
+  }
+  .live-dot::before {
+    content:'';
+    width:7px; height:7px;
+    border-radius:50%;
+    background:var(--green);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; box-shadow:0 0 0 0 rgba(0,255,136,.4); }
+    50% { opacity:.7; box-shadow:0 0 0 5px rgba(0,255,136,0); }
+  }
+  .btc-price {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .btc-change {
+    display: inline-block;
+    background: rgba(0,255,136,.12);
+    color: var(--green);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  .mini-chart {
+    width: 100%;
+    height: 80px;
+  }
+  .btc-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .btc-meta-item { }
+  .btc-meta-item .lbl { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+  .btc-meta-item .val {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--dim);
+  }
+
+  /* ── SECTION COMMON ─────────────────────────── */
+  section { padding: 64px 32px; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 10px;
+  }
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    margin-bottom: 8px;
+  }
+  .section-sub {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 560px;
+    margin-bottom: 40px;
+  }
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── MARKET TABLE ────────────────────────────── */
+  #markets { background: var(--surface); }
+  .market-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all .2s;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+    background: rgba(0,212,255,.06);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead th {
+    text-align: left;
+    padding: 10px 14px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Space Mono', monospace;
+  }
+  thead th:not(:first-child) { text-align: right; }
+  tbody tr {
+    border-bottom: 1px solid rgba(30,46,66,.5);
+    transition: background .15s;
+  }
+  tbody tr:hover { background: rgba(255,255,255,.025); }
+  td {
+    padding: 14px;
+    vertical-align: middle;
+  }
+  td:not(:first-child) { text-align: right; }
+  .coin-info { display: flex; align-items: center; gap: 12px; }
+  .coin-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+    flex-shrink: 0;
+  }
+  .coin-name { font-weight: 600; font-size: 13px; }
+  .coin-sym  { color: var(--muted); font-size: 11px; margin-top:1px; font-family:'Space Mono',monospace; }
+  .price-cell { font-family: 'Space Mono', monospace; font-weight: 700; }
+  .chg-cell { font-family: 'Space Mono', monospace; font-weight: 500; }
+  .chg-cell.up { color: var(--green); }
+  .chg-cell.dn { color: var(--red); }
+  .vol-cell  { color: var(--dim); font-family: 'Space Mono', monospace; }
+  .mcap-cell { color: var(--dim); font-family: 'Space Mono', monospace; }
+  .sparkline { width: 80px; height: 32px; }
+
+  /* ── PORTFOLIO ───────────────────────────────── */
+  #portfolio { background: var(--bg); }
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .card-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+  .portfolio-total {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 38px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 4px;
+  }
+  .portfolio-change {
+    color: var(--green);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+  .alloc-bar {
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    display: flex;
+    margin-bottom: 16px;
+  }
+  .alloc-seg { height:100%; }
+  .alloc-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .alloc-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+  }
+  .alloc-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+    flex-shrink:0;
+  }
+  .alloc-left { display:flex; align-items:center; color: var(--dim); }
+  .alloc-right { font-family:'Space Mono',monospace; color:var(--text); font-size:12px; }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .stat-box {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .stat-box .lbl { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .stat-box .val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .stat-box .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* ── TECHNICAL ANALYSIS ──────────────────────── */
+  #analysis { background: var(--surface); }
+  .indicators-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .indicator-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    transition: border-color .2s, transform .2s;
+  }
+  .indicator-card:hover {
+    border-color: rgba(0,212,255,.4);
+    transform: translateY(-2px);
+  }
+  .ind-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .ind-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .ind-abbr {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    background: rgba(0,212,255,.1);
+    color: var(--blue);
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .ind-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+  .ind-signal {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'Space Mono', monospace;
+  }
+  .ind-signal.buy  { color: var(--green); }
+  .ind-signal.sell { color: var(--red); }
+  .ind-signal.neutral { color: var(--gold); }
+  .ind-signal::before {
+    content:'';
+    width:6px; height:6px;
+    border-radius:50%;
+    background:currentColor;
+  }
+  .ind-formula {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: var(--card2);
+    border-radius: 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--dim);
+    line-height: 1.6;
+  }
+
+  /* ── STRATEGIES ──────────────────────────────── */
+  #strategies { background: var(--bg); }
+  .strat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .strat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 26px;
+    display: grid;
+    gap: 12px;
+  }
+  .strat-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    width:fit-content;
+  }
+  .strat-tag.scalping { background:rgba(168,85,247,.15); color:var(--purple); }
+  .strat-tag.swing    { background:rgba(0,212,255,.12); color:var(--blue); }
+  .strat-tag.position { background:rgba(255,184,0,.12); color:var(--gold); }
+  .strat-tag.arbitrage { background:rgba(0,255,136,.1); color:var(--green); }
+  .strat-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .strat-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .strat-meta {
+    display: flex;
+    gap: 16px;
+    margin-top: 4px;
+  }
+  .strat-meta-item .lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing:.5px; margin-bottom:2px; }
+  .strat-meta-item .val { font-family: 'Space Mono', monospace; font-size: 13px; color: var(--dim); }
+  .strat-rules {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .strat-rules li {
+    display: flex;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--dim);
+    line-height: 1.5;
+  }
+  .strat-rules li::before {
+    content: '→';
+    color: var(--blue);
+    flex-shrink: 0;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ── ORDER TYPES ────────────────────────────── */
+  #orders { background: var(--surface); }
+  .orders-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .order-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+  }
+  .order-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+  .order-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .order-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 14px;
+  }
+  .order-use {
+    font-size: 12px;
+    padding: 10px 12px;
+    background: var(--card2);
+    border-left: 2px solid var(--blue);
+    border-radius: 0 6px 6px 0;
+    color: var(--dim);
+    line-height: 1.5;
+  }
+
+  /* ── RISK MANAGEMENT ────────────────────────── */
+  #risk { background: var(--bg); }
+  .risk-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+  .risk-rule {
+    display: flex;
+    gap: 18px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .risk-rule:last-child { border-bottom: none; }
+  .risk-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--blue);
+    background: rgba(0,212,255,.08);
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items:center; justify-content:center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .risk-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .risk-body {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+  .calc-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 26px;
+    position: sticky;
+    top: 90px;
+  }
+  .calc-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 20px;
+  }
+  .calc-field {
+    margin-bottom: 14px;
+  }
+  .calc-field label {
+    font-size: 11px;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    font-family: 'Space Mono', monospace;
+  }
+  .calc-field input {
+    width: 100%;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: 'Space Mono', monospace;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .calc-field input:focus { border-color: var(--blue); }
+  .calc-btn {
+    width: 100%;
+    background: var(--blue);
+    color: var(--bg);
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    margin-top: 6px;
+    transition: opacity .2s;
+  }
+  .calc-btn:hover { opacity: .85; }
+  .calc-result {
+    margin-top: 16px;
+    padding: 14px;
+    background: var(--card2);
+    border-radius: 8px;
+    display: none;
+  }
+  .calc-result.show { display: block; }
+  .calc-result-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 5px 0;
+  }
+  .calc-result-row .lbl { color: var(--muted); }
+  .calc-result-row .val { font-family:'Space Mono',monospace; color: var(--text); font-weight:600; }
+  .calc-result-row .val.loss { color: var(--red); }
+  .calc-result-row .val.rr   { color: var(--blue); }
+
+  /* ── GLOSSARY ────────────────────────────────── */
+  #glossary { background: var(--surface); }
+  .glossary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+  }
+  .gloss-item {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+  .gloss-item:nth-child(even) { border-right: none; }
+  .gloss-term {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--blue);
+    margin-bottom: 5px;
+  }
+  .gloss-def { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* ── NEWS ────────────────────────────────────── */
+  #news { background: var(--bg); }
+  .news-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .news-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    transition: border-color .2s;
+  }
+  .news-card:hover { border-color: rgba(0,212,255,.35); }
+  .news-tag {
+    font-size: 10px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 10px;
+  }
+  .news-headline {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 10px;
+  }
+  .news-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 14px; }
+  .news-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+  .news-sentiment {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight:600;
+  }
+  .news-sentiment.bull { background:rgba(0,255,136,.1); color:var(--green); }
+  .news-sentiment.bear { background:rgba(255,59,92,.1); color:var(--red); }
+  .news-sentiment.neut { background:rgba(100,116,139,.1); color:var(--muted); }
+
+  /* ── EXCHANGES ───────────────────────────────── */
+  #exchanges { background: var(--surface); }
+  .ex-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .ex-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+  }
+  .ex-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ex-name { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .ex-type { font-size: 11px; color: var(--muted); margin-bottom: 12px; font-family:'Space Mono',monospace; }
+  .ex-fee-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .ex-fee { font-family:'Space Mono',monospace; font-size:16px; font-weight:700; color:var(--blue); }
+  .ex-rating {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--gold);
+  }
+
+  /* ── DeFi ────────────────────────────────────── */
+  #defi { background: var(--bg); }
+  .defi-concepts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .defi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .defi-icon { font-size: 32px; margin-bottom: 14px; }
+  .defi-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .defi-desc { font-size: 13px; color: var(--muted); line-height: 1.65; }
+  .defi-apy {
+    margin-top: 14px;
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    background: rgba(0,255,136,.08);
+    color: var(--green);
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+
+  /* ── ONCHAIN METRICS ─────────────────────────── */
+  #onchain { background: var(--surface); }
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .metric-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .metric-label { font-size: 11px; color: var(--muted); text-transform:uppercase; letter-spacing:.5px; font-family:'Space Mono',monospace; margin-bottom:8px; }
+  .metric-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .metric-sub { font-size: 12px; color: var(--muted); }
+  .metric-trend { font-family:'Space Mono',monospace; font-size:12px; margin-top:6px; }
+  .metric-trend.up { color:var(--green); }
+  .metric-trend.dn { color:var(--red); }
+
+  /* ── FOOTER ──────────────────────────────────── */
+  footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 48px 32px 32px;
+  }
+  .footer-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .footer-brand .logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--blue);
+    margin-bottom: 12px;
+  }
+  .footer-brand .logo span { color: var(--text); }
+  .footer-brand p { font-size: 13px; color: var(--muted); line-height: 1.65; max-width: 260px; }
+  .footer-col h4 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--dim);
+    margin-bottom: 16px;
+  }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-col ul li a {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color .15s;
+  }
+  .footer-col ul li a:hover { color: var(--blue); }
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .footer-disclaimer { font-size: 11px; color: var(--muted); max-width: 560px; }
+
+  /* ── RESPONSIVE ──────────────────────────────── */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; }
+    .indicators-grid { grid-template-columns: 1fr 1fr; }
+    .strat-grid { grid-template-columns: 1fr; }
+    .orders-grid { grid-template-columns: 1fr 1fr; }
+    .risk-grid { grid-template-columns: 1fr; }
+    .portfolio-grid { grid-template-columns: 1fr; }
+    .defi-concepts { grid-template-columns: 1fr 1fr; }
+    .metric-grid { grid-template-columns: 1fr 1fr; }
+    .ex-grid { grid-template-columns: 1fr 1fr; }
+    .news-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .glossary-grid { grid-template-columns: 1fr; }
+    .gloss-item { border-right: none; }
+    .hero h1 { font-size: 38px; }
+    nav { padding: 12px 20px; }
+    .nav-links { display: none; }
+    section { padding: 48px 20px; }
+  }
+  @media (max-width: 600px) {
+    .indicators-grid, .defi-concepts, .orders-grid, .ex-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 30px; }
+    .hero-stats { flex-direction: column; gap: 16px; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .metric-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ── SCROLL ANIMATIONS ───────────────────────── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity .5s ease, transform .5s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<!-- ── TICKER ──────────────────────────────────── -->
+<div class="ticker-wrap">
+  <div class="ticker-track" id="ticker"></div>
+</div>
+
+<!-- ── NAV ────────────────────────────────────── -->
+<nav>
+  <div class="nav-logo">Crypto<span>Desk</span> Pro</div>
+  <ul class="nav-links">
+    <li><a href="#markets">Markets</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#analysis">Analysis</a></li>
+    <li><a href="#strategies">Strategies</a></li>
+    <li><a href="#risk">Risk Mgmt</a></li>
+    <li><a href="#defi">DeFi</a></li>
+    <li><a href="#glossary">Glossary</a></li>
+  </ul>
+  <button class="nav-cta">Open Account</button>
+</nav>
+
+<!-- ── HERO ───────────────────────────────────── -->
+<div class="hero">
+  <div>
+    <div class="hero-eyebrow">// Professional Trading Terminal</div>
+    <h1>Trade digital assets with <em>precision.</em></h1>
+    <p>Your all-in-one hub for live prices, technical analysis, portfolio tracking, and professional trading strategy. Built for traders who demand depth.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="val">$2.4T</div><div class="lbl">Global Market Cap</div></div>
+      <div class="hero-stat"><div class="val">600+</div><div class="lbl">Active Pairs</div></div>
+      <div class="hero-stat"><div class="val">24/7</div><div class="lbl">Market Hours</div></div>
+    </div>
+  </div>
+  <div class="btc-card fade-in">
+    <div class="btc-card-header">
+      <div>
+        <div class="btc-name">Bitcoin</div>
+        <div class="btc-symbol">BTC/USD</div>
+      </div>
+      <div class="live-dot">LIVE</div>
+    </div>
+    <div class="btc-price" id="btc-price">$67,420</div>
+    <div class="btc-change" id="btc-change">▲ +2.84%</div>
+    <svg class="mini-chart" viewBox="0 0 240 80" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#00D4FF" stop-opacity=".3"/>
+          <stop offset="100%" stop-color="#00D4FF" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <path id="chart-area" fill="url(#chartGrad)"/>
+      <path id="chart-line" fill="none" stroke="#00D4FF" stroke-width="2" stroke-linejoin="round"/>
+    </svg>
+    <div class="btc-meta">
+      <div class="btc-meta-item"><div class="lbl">24h Volume</div><div class="val" id="btc-vol">$38.2B</div></div>
+      <div class="btc-meta-item"><div class="lbl">Market Cap</div><div class="val">$1.32T</div></div>
+      <div class="btc-meta-item"><div class="lbl">24h High</div><div class="val" id="btc-high">$68,100</div></div>
+      <div class="btc-meta-item"><div class="lbl">24h Low</div><div class="val" id="btc-low">$65,890</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MARKETS ─────────────────────────────────── -->
+<section id="markets">
+  <div class="container">
+    <div class="section-label">// Live Data</div>
+    <div class="section-title">Market Overview</div>
+    <p class="section-sub">Real-time prices, market caps, and 7-day performance for top digital assets.</p>
+    <div class="market-filters">
+      <button class="filter-btn active">All</button>
+      <button class="filter-btn">Layer 1</button>
+      <button class="filter-btn">DeFi</button>
+      <button class="filter-btn">Layer 2</button>
+      <button class="filter-btn">Stablecoins</button>
+      <button class="filter-btn">Memes</button>
+    </div>
+    <table id="market-table">
+      <thead>
+        <tr>
+          <th>#&nbsp;&nbsp;Asset</th>
+          <th>Price</th>
+          <th>24h %</th>
+          <th>7d %</th>
+          <th>Volume 24h</th>
+          <th>Market Cap</th>
+          <th>7d Chart</th>
+        </tr>
+      </thead>
+      <tbody id="market-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── PORTFOLIO ───────────────────────────────── -->
+<section id="portfolio">
+  <div class="container">
+    <div class="section-label">// Tracker</div>
+    <div class="section-title">Sample Portfolio</div>
+    <p class="section-sub">Track allocation, P&L, and key portfolio metrics at a glance.</p>
+    <div class="portfolio-grid">
+      <div class="card fade-in">
+        <div class="card-title">Total Portfolio Value</div>
+        <div class="portfolio-total">$142,830</div>
+        <div class="portfolio-change">▲ +$4,218 today (+3.04%)</div>
+        <div class="alloc-bar">
+          <div class="alloc-seg" style="width:44%;background:#00D4FF"></div>
+          <div class="alloc-seg" style="width:22%;background:#00FF88"></div>
+          <div class="alloc-seg" style="width:14%;background:#A855F7"></div>
+          <div class="alloc-seg" style="width:11%;background:#FFB800"></div>
+          <div class="alloc-seg" style="width:9%;background:#FF3B5C"></div>
+        </div>
+        <div class="alloc-legend">
+          <div class="alloc-row"><span class="alloc-left"><span class="alloc-dot" style="background:#00D4FF"></span>Bitcoin (BTC)</span><span class="alloc-right">44% · $62,845</span></div>
+          <div class="alloc-row"><span class="alloc-left"><span class="alloc-dot" style="background:#00FF88"></span>Ethereum (ETH)</span><span class="alloc-right">22% · $31,423</span></div>
+          <div class="alloc-row"><span class="alloc-left"><span class="alloc-dot" style="background:#A855F7"></span>Solana (SOL)</span><span class="alloc-right">14% · $19,996</span></div>
+          <div class="alloc-row"><span class="alloc-left"><span class="alloc-dot" style="background:#FFB800"></span>Chainlink (LINK)</span><span class="alloc-right">11% · $15,711</span></div>
+          <div class="alloc-row"><span class="alloc-left"><span class="alloc-dot" style="background:#FF3B5C"></span>Other</span><span class="alloc-right">9% · $12,855</span></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="stats-grid fade-in">
+          <div class="stat-box">
+            <div class="lbl">All-Time P&L</div>
+            <div class="val" style="color:var(--green)">+$38.4K</div>
+            <div class="sub">+36.8% since start</div>
+          </div>
+          <div class="stat-box">
+            <div class="lbl">Win Rate</div>
+            <div class="val" style="color:var(--blue)">68%</div>
+            <div class="sub">Last 100 trades</div>
+          </div>
+          <div class="stat-box">
+            <div class="lbl">Sharpe Ratio</div>
+            <div class="val">1.84</div>
+            <div class="sub">Risk-adjusted</div>
+          </div>
+          <div class="stat-box">
+            <div class="lbl">Max Drawdown</div>
+            <div class="val" style="color:var(--red)">-18.2%</div>
+            <div class="sub">Peak to trough</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TECHNICAL ANALYSIS ───────────────────────── -->
+<section id="analysis">
+  <div class="container">
+    <div class="section-label">// Technical Analysis</div>
+    <div class="section-title">Key Indicators</div>
+    <p class="section-sub">Master the indicators every professional trader uses to read market structure and time entries.</p>
+    <div class="indicators-grid" id="indicators-grid"></div>
+  </div>
+</section>
+
+<!-- ── STRATEGIES ─────────────────────────────── -->
+<section id="strategies">
+  <div class="container">
+    <div class="section-label">// Methodology</div>
+    <div class="section-title">Trading Strategies</div>
+    <p class="section-sub">From high-frequency scalping to long-term position trading — understand the mechanics of each approach.</p>
+    <div class="strat-grid" id="strat-grid"></div>
+  </div>
+</section>
+
+<!-- ── ORDER TYPES ────────────────────────────── -->
+<section id="orders">
+  <div class="container">
+    <div class="section-label">// Execution</div>
+    <div class="section-title">Order Types</div>
+    <p class="section-sub">Choosing the right order type is the difference between precise execution and costly slippage.</p>
+    <div class="orders-grid" id="orders-grid"></div>
+  </div>
+</section>
+
+<!-- ── RISK MANAGEMENT ────────────────────────── -->
+<section id="risk">
+  <div class="container">
+    <div class="section-label">// Capital Preservation</div>
+    <div class="section-title">Risk Management</div>
+    <p class="section-sub">Professionals don't just seek profit — they obsess over loss prevention. These rules protect your capital.</p>
+    <div class="risk-grid">
+      <div id="risk-rules"></div>
+      <div class="calc-card fade-in">
+        <div class="calc-title">Position Size Calculator</div>
+        <div class="calc-field">
+          <label>Account Size (USD)</label>
+          <input type="number" id="c-account" placeholder="e.g. 10000" value="10000">
+        </div>
+        <div class="calc-field">
+          <label>Risk Per Trade (%)</label>
+          <input type="number" id="c-risk" placeholder="e.g. 1" value="1">
+        </div>
+        <div class="calc-field">
+          <label>Entry Price (USD)</label>
+          <input type="number" id="c-entry" placeholder="e.g. 67000">
+        </div>
+        <div class="calc-field">
+          <label>Stop Loss Price (USD)</label>
+          <input type="number" id="c-stop" placeholder="e.g. 65000">
+        </div>
+        <div class="calc-field">
+          <label>Take Profit Price (USD)</label>
+          <input type="number" id="c-tp" placeholder="e.g. 71000">
+        </div>
+        <button class="calc-btn" onclick="calculate()">Calculate</button>
+        <div class="calc-result" id="calc-result">
+          <div class="calc-result-row"><span class="lbl">Position Size (USD)</span><span class="val" id="r-size"></span></div>
+          <div class="calc-result-row"><span class="lbl">Units to Buy</span><span class="val" id="r-units"></span></div>
+          <div class="calc-result-row"><span class="lbl">Max Loss $</span><span class="val loss" id="r-loss"></span></div>
+          <div class="calc-result-row"><span class="lbl">Target Profit $</span><span class="val" style="color:var(--green)" id="r-profit"></span></div>
+          <div class="calc-result-row"><span class="lbl">Risk/Reward Ratio</span><span class="val rr" id="r-rr"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DeFi ──────────────────────────────────── -->
+<section id="defi">
+  <div class="container">
+    <div class="section-label">// Decentralized Finance</div>
+    <div class="section-title">DeFi Essentials</div>
+    <p class="section-sub">On-chain finance protocols that operate without intermediaries — understand the key building blocks.</p>
+    <div class="defi-concepts" id="defi-grid"></div>
+  </div>
+</section>
+
+<!-- ── ONCHAIN METRICS ───────────────────────── -->
+<section id="onchain">
+  <div class="container">
+    <div class="section-label">// Blockchain Data</div>
+    <div class="section-title">On-Chain Metrics</div>
+    <p class="section-sub">Read directly from the blockchain — these metrics reveal what smart money is doing.</p>
+    <div class="metric-grid" id="metric-grid"></div>
+  </div>
+</section>
+
+<!-- ── EXCHANGES ─────────────────────────────── -->
+<section id="exchanges">
+  <div class="container">
+    <div class="section-label">// Infrastructure</div>
+    <div class="section-title">Major Exchanges</div>
+    <p class="section-sub">Where liquidity lives — a comparison of the world's top trading venues.</p>
+    <div class="ex-grid" id="ex-grid"></div>
+  </div>
+</section>
+
+<!-- ── GLOSSARY ───────────────────────────────── -->
+<section id="glossary">
+  <div class="container">
+    <div class="section-label">// Reference</div>
+    <div class="section-title">Trader's Glossary</div>
+    <p class="section-sub">Essential terminology for crypto markets — from the basics to advanced concepts.</p>
+    <div class="glossary-grid" id="glossary-grid"></div>
+  </div>
+</section>
+
+<!-- ── NEWS ──────────────────────────────────── -->
+<section id="news">
+  <div class="container">
+    <div class="section-label">// Market Intelligence</div>
+    <div class="section-title">Latest Analysis</div>
+    <p class="section-sub">Key narratives and macro themes shaping digital asset markets.</p>
+    <div class="news-grid" id="news-grid"></div>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────── -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo">Crypto<span>Desk</span> Pro</div>
+      <p>A professional reference terminal for digital asset traders. Market data, technical analysis, strategies, and risk management in one place.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Markets</h4>
+      <ul>
+        <li><a href="#markets">Spot Prices</a></li>
+        <li><a href="#portfolio">Portfolio</a></li>
+        <li><a href="#onchain">On-Chain</a></li>
+        <li><a href="#exchanges">Exchanges</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Learn</h4>
+      <ul>
+        <li><a href="#analysis">Indicators</a></li>
+        <li><a href="#strategies">Strategies</a></li>
+        <li><a href="#orders">Order Types</a></li>
+        <li><a href="#glossary">Glossary</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Tools</h4>
+      <ul>
+        <li><a href="#risk">Position Sizer</a></li>
+        <li><a href="#risk">Risk Calculator</a></li>
+        <li><a href="#defi">DeFi Guide</a></li>
+        <li><a href="#news">Market News</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 CryptoDesk Pro</span>
+    <span class="footer-disclaimer">Trading cryptocurrencies involves substantial risk of loss. This site is for informational purposes only and does not constitute financial advice. Past performance is not indicative of future results.</span>
+  </div>
+</footer>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────
+const COINS = [
+  { rank:1,  name:'Bitcoin',        sym:'BTC', icon:'₿', color:'#F7931A', price:67420,  chg24:-1.2,  chg7:+8.4,  vol:'$38.2B',  mcap:'$1.32T' },
+  { rank:2,  name:'Ethereum',       sym:'ETH', icon:'Ξ', color:'#627EEA', price:3512,   chg24:+2.1,  chg7:+12.1, vol:'$18.6B',  mcap:'$422B'  },
+  { rank:3,  name:'Solana',         sym:'SOL', icon:'◎', color:'#9945FF', price:178.40, chg24:+4.8,  chg7:+21.3, vol:'$4.1B',   mcap:'$82B'   },
+  { rank:4,  name:'BNB',            sym:'BNB', icon:'B', color:'#F3BA2F', price:618,    chg24:-0.5,  chg7:+3.8,  vol:'$1.8B',   mcap:'$89B'   },
+  { rank:5,  name:'XRP',            sym:'XRP', icon:'X', color:'#00AAE4', price:0.598,  chg24:+1.3,  chg7:+6.2,  vol:'$2.2B',   mcap:'$33B'   },
+  { rank:6,  name:'Avalanche',      sym:'AVAX',icon:'A', color:'#E84142', price:42.10,  chg24:-2.8,  chg7:-4.1,  vol:'$620M',   mcap:'$17B'   },
+  { rank:7,  name:'Chainlink',      sym:'LINK',icon:'⬡', color:'#375BD2', price:18.74,  chg24:+5.2,  chg7:+14.8, vol:'$480M',   mcap:'$11B'   },
+  { rank:8,  name:'Polkadot',       sym:'DOT', icon:'●', color:'#E6007A', price:9.18,   chg24:+0.8,  chg7:+2.3,  vol:'$290M',   mcap:'$12B'   },
+  { rank:9,  name:'USDT',           sym:'USDT',icon:'$', color:'#26A17B', price:1.00,   chg24:+0.01, chg7:+0.02, vol:'$92.1B',  mcap:'$112B'  },
+  { rank:10, name:'Arbitrum',       sym:'ARB', icon:'△', color:'#28A0F0', price:1.24,   chg24:+3.6,  chg7:+18.2, vol:'$310M',   mcap:'$4.2B'  },
+];
+
+const INDICATORS = [
+  { name:'Relative Strength Index', abbr:'RSI', signal:'neutral',
+    desc:'Measures the speed and magnitude of recent price movements on a 0–100 scale. Values above 70 indicate overbought conditions; below 30 suggest oversold.',
+    formula:'RSI = 100 – [100 / (1 + RS)]\nRS = Avg Gain / Avg Loss (14 periods)' },
+  { name:'Moving Average Convergence', abbr:'MACD', signal:'buy',
+    desc:'Tracks the relationship between two exponential moving averages (12 & 26 EMA). A bullish crossover above the signal line generates buy signals.',
+    formula:'MACD = 12 EMA − 26 EMA\nSignal = 9 EMA of MACD' },
+  { name:'Bollinger Bands', abbr:'BB', signal:'neutral',
+    desc:'Volatility envelope around a 20-period SMA. When price hugs the upper band, the asset is extended. A squeeze signals an imminent breakout.',
+    formula:'Upper = SMA(20) + 2σ\nLower = SMA(20) − 2σ' },
+  { name:'Volume-Weighted Avg Price', abbr:'VWAP', signal:'buy',
+    desc:'The average price weighted by volume — the intraday fair value benchmark. Institutions use VWAP to assess whether they\'re getting good fills.',
+    formula:'VWAP = Σ(Price × Volume) / Σ(Volume)' },
+  { name:'Fibonacci Retracement', abbr:'FIB', signal:'neutral',
+    desc:'Key support/resistance levels derived from Fibonacci ratios (23.6%, 38.2%, 61.8%, 78.6%). Price often reverses at these horizontal levels.',
+    formula:'Levels: 23.6% | 38.2% | 50%\n61.8% (Golden Ratio) | 78.6%' },
+  { name:'Average True Range', abbr:'ATR', signal:'sell',
+    desc:'Measures market volatility — the average of true price ranges over N periods. Traders use ATR to set stop-loss distances proportional to market noise.',
+    formula:'TR = max(High−Low, |High−Prev Close|,\n|Low−Prev Close|); ATR = 14-period EMA' },
+];
+
+const STRATEGIES = [
+  { tag:'scalping', title:'Scalping', timeframe:'1–5 minute charts',
+    desc:'Executing dozens of trades per day, capturing tiny price movements — typically 0.1% to 0.5% per trade. Requires tight spreads, fast execution, and iron discipline.',
+    risk:'Very High', horizon:'Seconds–Minutes',
+    rules:['Enter on order book imbalance or momentum breakouts','Use limit orders to avoid slippage','Target 2:1 risk/reward minimum per trade','Never hold positions overnight','Max 1% account risk per session'] },
+  { tag:'swing', title:'Swing Trading', timeframe:'4H – Daily charts',
+    desc:'Holding positions for 2–10 days to capture one "swing" in price. Relies on chart patterns, trend structure, and key support/resistance zones.',
+    risk:'Moderate', horizon:'Days–Weeks',
+    rules:['Identify higher-timeframe trend first','Enter on pullbacks to key EMAs or S/R levels','Set stops below structure, not arbitrary levels','Scale out at partial targets (50% at 1R, rest at 2–3R)','Re-evaluate thesis if held beyond 10 days'] },
+  { tag:'position', title:'Position Trading', timeframe:'Weekly – Monthly charts',
+    desc:'Long-term directional bets based on macro trends, on-chain fundamentals, and market cycles. Drawdowns are accepted in exchange for multi-hundred-percent gains.',
+    risk:'Low–Moderate', horizon:'Months–Years',
+    rules:['Accumulate during bear market despair, not euphoria','Dollar-cost average into positions over weeks','Use cold storage for assets held > 3 months','Monitor on-chain metrics monthly, not daily','Have clear thesis — market cycle, adoption narrative, or network growth'] },
+  { tag:'arbitrage', title:'Arbitrage', timeframe:'Real-time across exchanges',
+    desc:'Exploiting price differences for the same asset across exchanges or between spot and futures. In crypto, cross-exchange and cash-and-carry arb are the most common.',
+    risk:'Low', horizon:'Milliseconds–Hours',
+    rules:['Maintain funded accounts on 3+ exchanges simultaneously','Monitor funding rates for perpetual futures carry trades','Account for withdrawal/transfer fees in all calculations','Automate with APIs — manual arb windows close in seconds','Watch for flash crashes that can widen spreads unexpectedly'] },
+];
+
+const ORDERS = [
+  { icon:'📌', name:'Market Order', desc:'Executes immediately at the best available price. Guarantees execution but not price — subject to slippage in thin markets.', use:'Best for: liquid assets during normal market hours. Avoid during high volatility events.' },
+  { icon:'🎯', name:'Limit Order', desc:'Executes only at your specified price or better. You control the entry price but not the fill guarantee — the order sits in the book until matched.', use:'Best for: patient traders with specific levels. Earns maker rebates on most exchanges.' },
+  { icon:'🛑', name:'Stop-Market Order', desc:'Triggers a market order once price reaches your stop level. Used primarily for loss protection. Can gap through the stop in fast markets.', use:'Best for: cutting losers quickly. Set below key support to avoid normal wick-outs.' },
+  { icon:'🔒', name:'Stop-Limit Order', desc:'Like a stop-market, but converts to a limit order at the trigger. More precise but risks non-execution if price gaps past the limit.', use:'Best for: less liquid altcoins where a market stop could create severe slippage.' },
+  { icon:'📈', name:'Take Profit Order', desc:'Automatically closes a position when price reaches your profit target. Allows hands-free profit-taking without emotional interference.', use:'Best for: systematic traders who pre-define exits before entry.' },
+  { icon:'⚖️', name:'Trailing Stop Order', desc:'A dynamic stop that moves with price — locking in gains while capping downside. The stop trails by a fixed % or $ below the current high.', use:'Best for: trending markets. Allows riding momentum while protecting accumulated profits.' },
+];
+
+const RISK_RULES = [
+  { num:'01', title:'The 1% Rule', body:'Never risk more than 1% of your account on a single trade. With a $10,000 account that\'s $100 max. This lets you lose 100 trades in a row before losing your capital — psychologically and mathematically important.' },
+  { num:'02', title:'Always Use Stop-Losses', body:'Every position needs a predefined exit level before you enter. No exceptions. Place stops at technically logical levels — below support, above resistance — not arbitrary dollar amounts.' },
+  { num:'03', title:'Pre-Define Risk/Reward', body:'Only take trades with a minimum 2:1 risk/reward ratio. With a 50% win rate and 2:1 RR, you\'re profitable. With 3:1, you only need 25% wins to break even.' },
+  { num:'04', title:'Diversify & Correlate', body:'BTC and most altcoins are highly correlated. Holding ETH, SOL, and AVAX all at once is not diversification — they often move together. True diversification requires assets with low correlation.' },
+  { num:'05', title:'Size Down in Volatility', body:'When the VIX equivalent (DVOL) spikes or implied volatility is elevated, reduce position sizes by 30–50%. Wild markets eat underpowered risk systems alive.' },
+  { num:'06', title:'Max Drawdown Limits', body:'Set daily, weekly, and monthly loss limits. If you hit -3% in a day, stop trading for that day. Revenge trading after a bad session is how accounts are blown.' },
+];
+
+const DEFI = [
+  { icon:'🔄', title:'Decentralized Exchanges (DEX)', apy:null,
+    desc:'Automated market makers like Uniswap and Curve let users trade directly from their wallet using liquidity pools and algorithmic pricing. No KYC, no counterparty risk.' },
+  { icon:'🌾', title:'Yield Farming & Liquidity Mining', apy:'APY: 5–200%+',
+    desc:'Provide liquidity to DEX pools or lending protocols in exchange for trading fees and governance token rewards. Higher yields carry higher risks including impermanent loss.' },
+  { icon:'🏦', title:'Lending & Borrowing', apy:'APY: 2–15%',
+    desc:'Protocols like Aave and Compound allow users to deposit assets and earn interest, or use them as collateral to borrow other assets — all permissionlessly on-chain.' },
+  { icon:'🖼', title:'NFTs & Digital Ownership', apy:null,
+    desc:'Non-fungible tokens represent verifiable on-chain ownership of digital or physical assets. Professional traders monitor floor prices, royalty structures, and wash trading signals.' },
+  { icon:'⚡', title:'Perpetual Futures (Perps)', apy:null,
+    desc:'Synthetic trading instruments that track spot prices indefinitely via a funding rate mechanism. GMX, dYdX, and Hyperliquid offer on-chain perps with up to 50x leverage.' },
+  { icon:'🔗', title:'Cross-Chain Bridges', apy:null,
+    desc:'Move assets between blockchains (e.g., ETH to Arbitrum or Solana). Bridges have been major hack targets — always use audited, battle-tested bridges and verify contract addresses.' },
+];
+
+const METRICS = [
+  { label:'Exchange Netflow BTC', value:'-12,400', sub:'BTC leaving exchanges', trend:'+Bullish', up:true },
+  { label:'MVRV Z-Score', value:'1.84', sub:'Fair value indicator', trend:'Neutral zone', up:true },
+  { label:'Hash Rate (EH/s)', value:'620 EH/s', sub:'All-time high', trend:'+8% MoM', up:true },
+  { label:'Funding Rate', value:'+0.04%', sub:'Longs paying shorts', trend:'Slightly bullish', up:true },
+  { label:'Stablecoin Supply', value:'$162B', sub:'Dry powder on sidelines', trend:'+3.1% WoW', up:true },
+  { label:'NVT Ratio (BTC)', value:'64.2', sub:'Network value to tx', trend:'Below avg', up:false },
+  { label:'Long/Short Ratio', value:'1.18', sub:'Perpetuals bias', trend:'Longs dominating', up:true },
+  { label:'Active Addresses', value:'1.04M', sub:'Daily unique BTC addrs', trend:'+5.6% WoW', up:true },
+];
+
+const EXCHANGES = [
+  { name:'Binance',  type:'CEX · Spot + Futures', fee:'0.10%', rating:'★★★★★', color:'#F3BA2F', abbr:'BNB' },
+  { name:'Coinbase', type:'CEX · Spot + Advanced', fee:'0.40%', rating:'★★★★☆', color:'#0052FF', abbr:'CB' },
+  { name:'Kraken',   type:'CEX · Spot + Futures', fee:'0.16%', rating:'★★★★★', color:'#5741D9', abbr:'KRK' },
+  { name:'OKX',      type:'CEX · Spot + Perps',   fee:'0.08%', rating:'★★★★☆', color:'#00D4FF', abbr:'OKX' },
+  { name:'Bybit',    type:'CEX · Derivatives',    fee:'0.06%', rating:'★★★★☆', color:'#E8B43F', abbr:'BB'  },
+  { name:'dYdX',     type:'DEX · Perpetuals',     fee:'0.05%', rating:'★★★★☆', color:'#6966FF', abbr:'dX'  },
+  { name:'Uniswap',  type:'DEX · AMM Spot',       fee:'0.30%', rating:'★★★★☆', color:'#FF007A', abbr:'UNI' },
+  { name:'Hyperliquid', type:'DEX · Perps L1',    fee:'0.02%', rating:'★★★★★', color:'#00FF88', abbr:'HL'  },
+];
+
+const GLOSSARY = [
+  { term:'HODL', def:'Hold On for Dear Life — a strategy of holding crypto long-term regardless of price volatility.' },
+  { term:'FOMO', def:'Fear Of Missing Out — buying into a rally driven by emotion rather than analysis, often near the top.' },
+  { term:'Liquidation', def:'Forced closure of a leveraged position when margin falls below the maintenance threshold.' },
+  { term:'Funding Rate', def:'A periodic payment between long and short perpetual futures holders to keep the price anchored to spot.' },
+  { term:'Open Interest', def:'Total value of outstanding futures contracts not yet settled — a measure of market participation.' },
+  { term:'Impermanent Loss', def:'Loss suffered by liquidity providers when the price ratio of pooled assets changes versus just holding.' },
+  { term:'Whale', def:'An entity holding a large enough position to meaningfully influence market prices.' },
+  { term:'Mempool', def:'The pending transaction pool waiting to be included in the next block.' },
+  { term:'Gas Fees', def:'Fees paid to miners/validators to execute transactions on blockchains like Ethereum.' },
+  { term:'Flash Loan', def:'Uncollateralized DeFi loan that must be borrowed and repaid within a single transaction block.' },
+  { term:'TVL', def:'Total Value Locked — assets deposited in DeFi protocols, used as a measure of adoption.' },
+  { term:'Spot Price', def:'The current market price for immediate settlement, as opposed to futures prices.' },
+  { term:'Basis', def:'The difference between the spot and futures price. Positive basis (futures > spot) = contango.' },
+  { term:'Order Book', def:'A real-time ledger of all open buy (bid) and sell (ask) limit orders at each price level.' },
+  { term:'Slippage', def:'The difference between expected execution price and actual fill price, caused by insufficient liquidity.' },
+  { term:'Alpha', def:'Returns in excess of a benchmark. "Getting alpha" means outperforming the market.' },
+  { term:'Beta', def:'Correlation to the broader market (BTC). High-beta alts move more violently than BTC.' },
+  { term:'Leverage', def:'Borrowing capital to amplify position size. 10x leverage means a 10% move = 100% gain or loss.' },
+  { term:'Short Squeeze', def:'When a heavily shorted asset rises sharply, forcing short sellers to buy back, accelerating the rally.' },
+  { term:'Wyckoff Cycle', def:'A framework describing accumulation, markup, distribution, and markdown phases of market cycles.' },
+];
+
+const NEWS = [
+  { tag:'Macro', headline:'Bitcoin ETF Inflows Reach Record $800M in a Single Day', body:'Institutional demand shows no signs of slowing as spot ETFs continue absorbing supply. Analysts note that mining sell pressure is now fully offset by ETF buying at current rates.', date:'Jun 12, 2026', sentiment:'bull' },
+  { tag:'DeFi', headline:'Total DeFi TVL Surpasses $200B Milestone for First Time', body:'Driven by liquid staking protocols and emerging real-world asset (RWA) tokenization, decentralized finance is setting new benchmarks heading into Q3. Ethereum still dominates at 55% share.', date:'Jun 11, 2026', sentiment:'bull' },
+  { tag:'Regulatory', headline:'EU MiCA Implementation Clears Final Hurdles', body:'Markets respond positively as regulatory clarity removes a key uncertainty overhang. Compliant exchanges see volume migration from offshore venues as institutional mandates require licensed counterparties.', date:'Jun 10, 2026', sentiment:'neut' },
+  { tag:'Layer 2', headline:'Ethereum L2s Process More Transactions Than Base Chain', body:'Arbitrum, Optimism, and Base collectively surpass L1 Ethereum in daily transaction throughput — a milestone that validates the rollup-centric scaling roadmap and suppresses ETH gas fees.', date:'Jun 9, 2026', sentiment:'bull' },
+  { tag:'On-Chain', headline:'Bitcoin Supply Shock Deepens as Long-Term Holders Accumulate', body:'On-chain data shows that wallets dormant for over 12 months now hold 75% of the total supply — the highest reading since the 2020 accumulation phase that preceded the 2021 bull run.', date:'Jun 8, 2026', sentiment:'bull' },
+  { tag:'Derivatives', headline:'Perpetual Funding Rates Flash Caution for Near-Term Outlook', body:'Across major venues, BTC perpetual funding rates briefly touched +0.12% — a level associated with crowded long positioning. Short-term traders are watching for a potential long squeeze in the $65–66K support zone.', date:'Jun 7, 2026', sentiment:'bear' },
+];
+
+// ── RENDER FUNCTIONS ──────────────────────────────────────────────────────
+function sparklinePath(up=true, w=80, h=32) {
+  const pts = Array.from({length:8}, (_,i) => {
+    const base = up ? h - (i/7)*(h*0.55) : (i/7)*(h*0.55);
+    return base + (Math.random()-0.5)*(h*0.25);
+  });
+  const coords = pts.map((y,i) => `${i/(pts.length-1)*w},${y}`);
+  const line = 'M' + coords.join(' L');
+  const area = line + ` L${w},${h} L0,${h} Z`;
+  return { line, area };
+}
+
+function buildTicker() {
+  const items = [...COINS, ...COINS].map(c => {
+    const up = c.chg24 >= 0;
+    return `<span class="ticker-item"><span class="sym">${c.sym}</span><span class="prc">$${c.price.toLocaleString()}</span><span class="chg ${up?'up':'dn'}">${up?'▲':'▼'} ${Math.abs(c.chg24).toFixed(2)}%</span></span>`;
+  }).join('');
+  document.getElementById('ticker').innerHTML = items + items;
+}
+
+function buildMarkets() {
+  const tbody = document.getElementById('market-body');
+  tbody.innerHTML = COINS.map(c => {
+    const up24 = c.chg24>=0, up7=c.chg7>=0;
+    const sp = sparklinePath(up7);
+    const clr = up7?'#00FF88':'#FF3B5C';
+    return `<tr>
+      <td><div class="coin-info">
+        <div class="coin-icon" style="background:${c.color}22;color:${c.color}">${c.icon}</div>
+        <div><div class="coin-name">${c.name}</div><div class="coin-sym">${c.sym}</div></div>
+      </div></td>
+      <td class="price-cell">$${c.price.toLocaleString()}</td>
+      <td class="chg-cell ${up24?'up':'dn'}">${up24?'▲':'▼'} ${Math.abs(c.chg24).toFixed(2)}%</td>
+      <td class="chg-cell ${up7?'up':'dn'}">${up7?'▲':'▼'} ${Math.abs(c.chg7).toFixed(2)}%</td>
+      <td class="vol-cell">${c.vol}</td>
+      <td class="mcap-cell">${c.mcap}</td>
+      <td><svg class="sparkline" viewBox="0 0 80 32" preserveAspectRatio="none">
+        <defs><linearGradient id="sg${c.sym}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${clr}" stop-opacity=".25"/>
+          <stop offset="100%" stop-color="${clr}" stop-opacity="0"/>
+        </linearGradient></defs>
+        <path fill="url(#sg${c.sym})" d="${sp.area}"/>
+        <path fill="none" stroke="${clr}" stroke-width="1.5" d="${sp.line}"/>
+      </svg></td>
+    </tr>`;
+  }).join('');
+}
+
+function buildIndicators() {
+  const g = document.getElementById('indicators-grid');
+  g.innerHTML = INDICATORS.map(ind => `
+    <div class="indicator-card fade-in">
+      <div class="ind-header">
+        <div class="ind-name">${ind.name}</div>
+        <div class="ind-abbr">${ind.abbr}</div>
+      </div>
+      <div class="ind-desc">${ind.desc}</div>
+      <div class="ind-signal ${ind.signal}">${ind.signal.toUpperCase()}</div>
+      <div class="ind-formula">${ind.formula}</div>
+    </div>`).join('');
+}
+
+function buildStrategies() {
+  const g = document.getElementById('strat-grid');
+  g.innerHTML = STRATEGIES.map(s => `
+    <div class="strat-card fade-in">
+      <div class="strat-tag ${s.tag}">${s.tag}</div>
+      <div class="strat-title">${s.title}</div>
+      <div class="strat-desc">${s.desc}</div>
+      <div class="strat-meta">
+        <div class="strat-meta-item"><div class="lbl">Timeframe</div><div class="val">${s.timeframe}</div></div>
+        <div class="strat-meta-item"><div class="lbl">Risk Level</div><div class="val">${s.risk}</div></div>
+        <div class="strat-meta-item"><div class="lbl">Hold Time</div><div class="val">${s.horizon}</div></div>
+      </div>
+      <ul class="strat-rules">${s.rules.map(r=>`<li>${r}</li>`).join('')}</ul>
+    </div>`).join('');
+}
+
+function buildOrders() {
+  const g = document.getElementById('orders-grid');
+  g.innerHTML = ORDERS.map(o => `
+    <div class="order-card fade-in">
+      <div class="order-icon">${o.icon}</div>
+      <div class="order-name">${o.name}</div>
+      <div class="order-desc">${o.desc}</div>
+      <div class="order-use">${o.use}</div>
+    </div>`).join('');
+}
+
+function buildRisk() {
+  const g = document.getElementById('risk-rules');
+  g.innerHTML = RISK_RULES.map(r => `
+    <div class="risk-rule fade-in">
+      <div class="risk-num">${r.num}</div>
+      <div><div class="risk-title">${r.title}</div><div class="risk-body">${r.body}</div></div>
+    </div>`).join('');
+}
+
+function buildDefi() {
+  const g = document.getElementById('defi-grid');
+  g.innerHTML = DEFI.map(d => `
+    <div class="defi-card fade-in">
+      <div class="defi-icon">${d.icon}</div>
+      <div class="defi-title">${d.title}</div>
+      <div class="defi-desc">${d.desc}</div>
+      ${d.apy ? `<span class="defi-apy">${d.apy}</span>` : ''}
+    </div>`).join('');
+}
+
+function buildMetrics() {
+  const g = document.getElementById('metric-grid');
+  g.innerHTML = METRICS.map(m => `
+    <div class="metric-box fade-in">
+      <div class="metric-label">${m.label}</div>
+      <div class="metric-value">${m.value}</div>
+      <div class="metric-sub">${m.sub}</div>
+      <div class="metric-trend ${m.up?'up':'dn'}">${m.up?'▲':'▼'} ${m.trend}</div>
+    </div>`).join('');
+}
+
+function buildExchanges() {
+  const g = document.getElementById('ex-grid');
+  g.innerHTML = EXCHANGES.map(e => `
+    <div class="ex-card fade-in">
+      <div class="ex-logo" style="color:${e.color}">${e.abbr}</div>
+      <div class="ex-name">${e.name}</div>
+      <div class="ex-type">${e.type}</div>
+      <div class="ex-fee-label">Maker Fee</div>
+      <div class="ex-fee">${e.fee}</div>
+      <div class="ex-rating">${e.rating}</div>
+    </div>`).join('');
+}
+
+function buildGlossary() {
+  const g = document.getElementById('glossary-grid');
+  g.innerHTML = GLOSSARY.map(gl => `
+    <div class="gloss-item fade-in">
+      <div class="gloss-term">${gl.term}</div>
+      <div class="gloss-def">${gl.def}</div>
+    </div>`).join('');
+}
+
+function buildNews() {
+  const g = document.getElementById('news-grid');
+  g.innerHTML = NEWS.map(n => `
+    <div class="news-card fade-in">
+      <div class="news-tag">${n.tag}</div>
+      <div class="news-headline">${n.headline}</div>
+      <div class="news-body">${n.body}</div>
+      <div class="news-footer">
+        <span>${n.date}</span>
+        <span class="news-sentiment ${n.sentiment}">${n.sentiment==='bull'?'Bullish':n.sentiment==='bear'?'Bearish':'Neutral'}</span>
+      </div>
+    </div>`).join('');
+}
+
+// ── MINI BTC CHART ─────────────────────────────────────────────────────────
+function buildBtcChart() {
+  const pts = [68,62,65,60,63,61,66,64,68,65,70,67,72,68,71,69,73,70,74,72,75,71,74,70,73];
+  const w=240, h=80, pad=2;
+  const min=Math.min(...pts)-2, max=Math.max(...pts)+2;
+  const coords = pts.map((v,i)=>`${pad+i/(pts.length-1)*(w-pad*2)},${h-pad-(v-min)/(max-min)*(h-pad*2)}`);
+  const line = 'M'+coords.join(' L');
+  const area = line+` L${w-pad},${h-pad} L${pad},${h-pad} Z`;
+  document.getElementById('chart-line').setAttribute('d',line);
+  document.getElementById('chart-area').setAttribute('d',area);
+}
+
+// ── POSITION SIZE CALCULATOR ───────────────────────────────────────────────
+function calculate() {
+  const account = +document.getElementById('c-account').value;
+  const risk    = +document.getElementById('c-risk').value / 100;
+  const entry   = +document.getElementById('c-entry').value;
+  const stop    = +document.getElementById('c-stop').value;
+  const tp      = +document.getElementById('c-tp').value;
+  if (!account||!risk||!entry||!stop) return;
+  const riskAmt = account * risk;
+  const stopDist = Math.abs(entry - stop);
+  const units = riskAmt / stopDist;
+  const posSize = units * entry;
+  const profit = tp ? units * (tp - entry) : null;
+  const rr = tp ? (Math.abs(tp-entry)/stopDist).toFixed(2) : null;
+  document.getElementById('r-size').textContent   = '$'+posSize.toFixed(2);
+  document.getElementById('r-units').textContent  = units.toFixed(6);
+  document.getElementById('r-loss').textContent   = '-$'+riskAmt.toFixed(2);
+  document.getElementById('r-profit').textContent = profit ? '+$'+profit.toFixed(2) : 'N/A';
+  document.getElementById('r-rr').textContent     = rr ? rr+'R' : 'N/A';
+  const res = document.getElementById('calc-result');
+  res.classList.add('show');
+}
+
+// ── FILTER BUTTONS ─────────────────────────────────────────────────────────
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// ── SCROLL ANIMATION ───────────────────────────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+  });
+}, { threshold: 0.1 });
+
+function observeAll() {
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+}
+
+// ── LIVE BTC PRICE SIMULATION ──────────────────────────────────────────────
+let btcBase = 67420;
+function animateBtcPrice() {
+  btcBase += (Math.random()-0.48)*120;
+  btcBase = Math.max(64000, Math.min(71000, btcBase));
+  const open = 65612;
+  const chg = ((btcBase-open)/open*100);
+  const up = chg>=0;
+  document.getElementById('btc-price').textContent = '$'+Math.round(btcBase).toLocaleString();
+  const el = document.getElementById('btc-change');
+  el.textContent = `${up?'▲':'▼'} ${up?'+':''}${chg.toFixed(2)}%`;
+  el.style.background = up?'rgba(0,255,136,.12)':'rgba(255,59,92,.12)';
+  el.style.color = up?'var(--green)':'var(--red)';
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+buildTicker();
+buildMarkets();
+buildBtcChart();
+buildIndicators();
+buildStrategies();
+buildOrders();
+buildRisk();
+buildDefi();
+buildMetrics();
+buildExchanges();
+buildGlossary();
+buildNews();
+observeAll();
+
+setInterval(animateBtcPrice, 2200);
+</script>
+</body>
+</html>
